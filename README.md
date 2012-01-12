@@ -28,9 +28,9 @@ The easiest way to use clj-statsd in your own projects is via
 [Leiningen](http://github.com/technomancy/leiningen). Add the following
 dependency to your project.clj file:
 
-    [clj-statsd "0.3.0"]
+    [clj-statsd "0.3.1"]
 
-To build Compojure from source, run the following commands:
+To build from source, run the following commands:
 
     lein deps
     lein jar
