@@ -26,13 +26,15 @@
    statsd metric line."
   [content rate]
   (when (or (>= rate 1.0) (<= (.nextDouble (:random @cfg)) rate))
-    (send sockagt
-          #(doto %1 (.send %2))
-          (DatagramPacket.
-            (.getBytes content)
-            (count content)
-            (:host @cfg)
-            (:port @cfg)))))
+    (when-let [packet (try
+                        (DatagramPacket.
+                          (.getBytes content)
+                          (count content)
+                          (:host @cfg)
+                          (:port @cfg))
+                        (catch Exception e
+                          nil))]
+      (send sockagt #(doto %1 (.send %2)) packet))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
