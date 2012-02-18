@@ -24,17 +24,17 @@
 (defn publish
   "Send a metric over the network. This should be a fully formatted
    statsd metric line."
-  [content rate]
-  (when (or (>= rate 1.0) (<= (.nextDouble (:random @cfg)) rate))
+  [^String content rate]
+  (when (or (>= rate 1.0) (<= (.nextDouble ^Random (:random @cfg)) rate))
     (when-let [packet (try
                         (DatagramPacket.
-                          (.getBytes content)
+                          (Class/forName "[B") (.getBytes content)
                           (count content)
                           (:host @cfg)
                           (:port @cfg))
                         (catch Exception e
                           nil))]
-      (send sockagt #(doto %1 (.send %2)) packet))))
+      (send sockagt #(doto ^DatagramSocket %1 (.send %2)) packet))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
