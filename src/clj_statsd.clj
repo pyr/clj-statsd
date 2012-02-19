@@ -28,7 +28,7 @@
   (when (or (>= rate 1.0) (<= (.nextDouble ^Random (:random @cfg)) rate))
     (when-let [packet (try
                         (DatagramPacket.
-                          (Class/forName "[B") (.getBytes content)
+                          (.getBytes content)
                           (count content)
                           (:host @cfg)
                           (:port @cfg))
