@@ -28,10 +28,10 @@
   (when (or (>= rate 1.0) (<= (.nextDouble ^Random (:random @cfg)) rate))
     (when-let [packet (try
                         (DatagramPacket.
-                          (.getBytes content)
-                          (count content)
-                          (:host @cfg)
-                          (:port @cfg))
+                         ^"[B" (.getBytes content)
+                         ^Integer (count content)
+                         ^InetAddress (:host @cfg)
+                         ^Integer (:port @cfg))
                         (catch Exception e
                           nil))]
       (send sockagt #(doto ^DatagramSocket %1 (.send %2)) packet))))
