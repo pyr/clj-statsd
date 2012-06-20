@@ -21,8 +21,9 @@
                      :host   (InetAddress/getByName host)
                      :port   port})))
 
-(defn send-stat [^String content]
+(defn send-stat 
   "Send a raw metric over the network."
+  [^String content]
   (when-let [packet (try
                       (DatagramPacket.
                        ^"[B" (.getBytes content)
