@@ -9,7 +9,7 @@
   (atom nil))
 
 (def
-  ^{:doc "Atom holding the datagram socket"}
+  ^{:doc "Agent holding the datagram socket"}
   sockagt
   (agent nil))
 
@@ -21,20 +21,27 @@
                      :host   (InetAddress/getByName host)
                      :port   port})))
 
+(defn send-stat 
+  "Send a raw metric over the network."
+  [^String content]
+  (when-let [packet (try
+                      (DatagramPacket.
+                       ^"[B" (.getBytes content)
+                       ^Integer (count content)
+                       ^InetAddress (:host @cfg)
+                       ^Integer (:port @cfg))
+                      (catch Exception e
+                        nil))]
+    (send sockagt #(doto ^DatagramSocket %1 (.send %2)) packet)))
+
 (defn publish
-  "Send a metric over the network. This should be a fully formatted
-   statsd metric line."
+  "Send a metric over the network, based on the provided sampling rate.
+  This should be a fully formatted statsd metric line."
   [^String content rate]
-  (when (or (>= rate 1.0) (<= (.nextDouble ^Random (:random @cfg)) rate))
-    (when-let [packet (try
-                        (DatagramPacket.
-                         ^"[B" (.getBytes content)
-                         ^Integer (count content)
-                         ^InetAddress (:host @cfg)
-                         ^Integer (:port @cfg))
-                        (catch Exception e
-                          nil))]
-      (send sockagt #(doto ^DatagramSocket %1 (.send %2)) packet))))
+  (cond
+    (nil? @cfg) nil
+    (>= rate 1.0) (send-stat content)
+    (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content rate))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
