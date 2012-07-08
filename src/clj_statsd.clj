@@ -61,3 +61,16 @@
   ([k]        (increment k -1 1.0))
   ([k v]      (increment k (* -1 v) 1.0))
   ([k v rate] (increment k (* -1 v) rate)))
+
+(defmacro with-sampled-timing
+  "Time the execution of the provided code, with sampling."
+  [k rate & body]
+  `(let [start# (System/currentTimeMillis)
+         result# (do ~@body)]
+    (timing ~k (- (System/currentTimeMillis) start#) ~rate)
+    result#))
+
+(defmacro with-timing
+  "Time the execution of the provided code."
+  [k & body]
+  `(with-sampled-timing ~k 1.0 ~@body))
