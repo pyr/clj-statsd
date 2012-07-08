@@ -44,3 +44,17 @@
 (deftest should-not-send-stat-without-cfg
   (with-redefs [cfg (atom nil)]
     (should-send-expected-stat "gorets:1|c" 0 0 (increment "gorets"))))
+
+(deftest should-time-code
+  (let [cnt (atom 0)]
+    (with-redefs [timing
+                  (fn [k v rate]
+                    (is (= "test.time" k))
+                    (is (>= v 200))
+                    (is (= 1.0 rate))
+                    (swap! cnt inc))]
+      (with-timing "test.time"
+        (Thread/sleep 200))
+      (with-sampled-timing "test.time" 1.0
+        (Thread/sleep 200))
+      (is (= @cnt 2)))))
