@@ -62,6 +62,11 @@
   ([k v]      (increment k (* -1 v) 1.0))
   ([k v rate] (increment k (* -1 v) rate)))
 
+(defn gauge
+  "Send an arbitrary value."
+  ([k v]      (gauge k v 1.0))
+  ([k v rate] (publish (format "%s:%d|g" (name k) v) rate)))
+
 (defmacro with-sampled-timing
   "Time the execution of the provided code, with sampling."
   [k rate & body]
