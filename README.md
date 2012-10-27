@@ -18,6 +18,8 @@ Here is a snippet showing the use of clj-statsd:
 
     (s/timing :timing_value 300)        ; record 300ms for "timing_value"
 
+    (s/gauge :current_value 42)         ; record an arbitrary value
+
 Buckets can be strings or keywords. For more information please refer to
 [statsd](https://github.com/etsy/statsd)
 
