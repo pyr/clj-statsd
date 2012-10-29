@@ -4,3 +4,4 @@ pom.xml
 *jar
 lib
 classes
+/target
