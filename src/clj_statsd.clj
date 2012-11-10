@@ -67,6 +67,12 @@
   ([k v]      (gauge k v 1.0))
   ([k v rate] (publish (format "%s:%d|g" (name k) v) rate)))
 
+(defn unique
+  "Send an event, unique occurences of which per flush interval
+   will be counted by the statsd server. We have no rate call
+   signature here because that wouldn't make much sense."
+  ([k v] (publish (format "%s:%d|s" (name k) v) 1.0)))
+
 (defmacro with-sampled-timing
   "Time the execution of the provided code, with sampling."
   [k rate & body]

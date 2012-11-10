@@ -38,6 +38,11 @@
     (gauge :gaugor 333)
     (gauge "gaugor" 333 1)))
 
+(deftest should-send-unique
+  (should-send-expected-stat "unique:765|s" 2 2
+    (unique "unique" 765)
+    (unique :unique 765)))
+
 (deftest should-send-timing-with-default-rate
   (should-send-expected-stat "glork:320|ms" 2 2
     (timing "glork" 320)  
