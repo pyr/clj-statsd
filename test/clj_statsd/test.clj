@@ -32,6 +32,12 @@
   (should-send-expected-stat "gorets:-7|c" 1 1
     (decrement :gorets 7)))
 
+(deftest should-send-gauge
+  (should-send-expected-stat "gaugor:333|g" 3 3
+    (gauge "gaugor" 333)
+    (gauge :gaugor 333)
+    (gauge "gaugor" 333 1)))
+
 (deftest should-send-timing-with-default-rate
   (should-send-expected-stat "glork:320|ms" 2 2
     (timing "glork" 320)  
