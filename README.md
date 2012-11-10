@@ -1,5 +1,5 @@
 clj-statsd is a client for the [statsd](https://github.com/etsy/statsd)
-protocol.
+protocol for the [clojure](http://clojure.org) programming language.
 
 [![Build
 Status](https://secure.travis-ci.org/pyr/clj-statsd.png)](http://travis-ci.org/pyr/clj-statsd)
