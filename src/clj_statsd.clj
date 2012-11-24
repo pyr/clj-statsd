@@ -15,11 +15,12 @@
 
 (defn setup
   "Initialize configuration"
-  [host port]
+  [host port & opts]
   (send sockagt #(or % (DatagramSocket.)))
-  (swap! cfg #(or % {:random (Random.)
-                     :host   (InetAddress/getByName host)
-                     :port   port})))
+  (swap! cfg #(or % (merge {:random (Random.)
+                            :host   (InetAddress/getByName host)
+                            :port   port}
+                           (apply hash-map opts)))))
 
 (defn send-stat 
   "Send a raw metric over the network."
@@ -38,10 +39,12 @@
   "Send a metric over the network, based on the provided sampling rate.
   This should be a fully formatted statsd metric line."
   [^String content rate]
-  (cond
-    (nil? @cfg) nil
-    (>= rate 1.0) (send-stat content)
-    (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content rate))))
+  (let [prefix (:prefix @cfg)
+        content (if prefix (str prefix content) content)]
+    (cond
+      (nil? @cfg) nil
+      (>= rate 1.0) (send-stat content)
+      (<= (.nextDouble ^Random (:random @cfg)) rate) (send-stat (format "%s|@%f" content rate)))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment
