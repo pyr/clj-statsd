@@ -69,3 +69,10 @@
       (with-sampled-timing "test.time" 1.0
         (Thread/sleep 200))
       (is (= @cnt 2)))))
+
+(deftest should-prefix
+  (with-redefs [cfg (atom nil)]
+    (setup "localhost" 8125 :prefix "test.stats.")
+    (should-send-expected-stat "test.stats.gorets:1|c" 2 2
+      (increment "gorets")
+      (increment :gorets))))
