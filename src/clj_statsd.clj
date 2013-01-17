@@ -19,7 +19,7 @@
   (send sockagt #(or % (DatagramSocket.)))
   (swap! cfg #(or % (merge {:random (Random.)
                             :host   (InetAddress/getByName host)
-                            :port   port}
+                            :port   (if (integer? port) port (Integer/parseInt port))}
                            (apply hash-map opts)))))
 
 (defn send-stat 
