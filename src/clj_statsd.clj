@@ -22,6 +22,14 @@
                             :port   (if (integer? port) port (Integer/parseInt port))}
                            (apply hash-map opts)))))
 
+(defn- send-packet
+  ""
+  [^DatagramSocket socket ^DatagramPacket packet]
+  (try
+    (doto socket (.send packet))
+    (catch Exception e
+      socket)))
+
 (defn send-stat 
   "Send a raw metric over the network."
   [^String content]
@@ -33,7 +41,7 @@
                        ^Integer (:port @cfg))
                       (catch Exception e
                         nil))]
-    (send sockagt #(doto ^DatagramSocket %1 (.send %2)) packet)))
+    (send sockagt send-packet packet)))
 
 (defn publish
   "Send a metric over the network, based on the provided sampling rate.
