@@ -26,8 +26,7 @@
   ""
   [^DatagramSocket socket ^DatagramPacket packet]
   (try
-    (doto ^DatagramSocket socket
-          (.send packet))
+    (doto socket (.send packet))
     (catch Exception e
       socket)))
 
