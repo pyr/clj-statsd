@@ -22,7 +22,9 @@
     (increment :gorets)
     (increment "gorets", 1))
   (should-send-expected-stat "gorets:7|c" 1 1
-    (increment :gorets 7)))
+    (increment :gorets 7))
+  (should-send-expected-stat "gorets:1.1|c" 1 1
+    (increment :gorets 1.1)))
 
 (deftest should-send-decrement
   (should-send-expected-stat "gorets:-1|c" 3 3
@@ -30,7 +32,9 @@
     (decrement :gorets)
     (decrement "gorets", 1))
   (should-send-expected-stat "gorets:-7|c" 1 1
-    (decrement :gorets 7)))
+    (decrement :gorets 7))
+  (should-send-expected-stat "gorets:-1.1|c" 1 1
+    (decrement :gorets 1.1)))
 
 (deftest should-send-gauge
   (should-send-expected-stat "gaugor:333|g" 3 3

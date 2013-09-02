@@ -59,7 +59,7 @@
   with a 1.0 rate"
   ([k]        (increment k 1 1.0))
   ([k v]      (increment k v 1.0))
-  ([k v rate] (publish (format "%s:%d|c" (name k) v) rate)))
+  ([k v rate] (publish (format "%s:%s|c" (name k) v) rate)))
 
 (defn timing
   "Time an event at specified rate, defaults to 1.0 rate"
