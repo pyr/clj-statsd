@@ -42,6 +42,12 @@
     (gauge :gaugor 333)
     (gauge "gaugor" 333 1)))
 
+(deftest should-send-gauge-inc-dec
+  (should-send-expected-stat "gaugor:+1|g" 1 1
+    (gauge "gaugor" 1 1 :change? true))
+  (should-send-expected-stat "gaugor:-1|g" 1 1
+    (gauge "gaugor" -1 1 :change? true)))
+
 (deftest should-send-unique
   (should-send-expected-stat "unique:765|s" 2 2
     (unique "unique" 765)
