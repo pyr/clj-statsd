@@ -76,7 +76,12 @@
 (defn gauge
   "Send an arbitrary value."
   ([k v]      (gauge k v 1.0))
-  ([k v rate] (publish (format "%s:%d|g" (name k) v) rate)))
+  ([k v rate] (s/publish (format "%s:%d|g" (name k) v) rate))
+  ([k v rate & {:keys [change?]}]
+     (when change?
+       (cond
+        (pos? v) (s/publish (format "%s:+%d|g" (name k) v) rate)
+        (neg? v) (s/publish (format "%s:-%d|g" (name k) v) rate)))))
 
 (defn unique
   "Send an event, unique occurences of which per flush interval
