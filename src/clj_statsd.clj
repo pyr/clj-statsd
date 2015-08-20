@@ -30,7 +30,7 @@
     (catch Exception e
       socket)))
 
-(defn send-stat 
+(defn send-stat
   "Send a raw metric over the network."
   [^String content]
   (when-let [packet (try
@@ -64,7 +64,7 @@
 (defn timing
   "Time an event at specified rate, defaults to 1.0 rate"
   ([k v]      (timing k v 1.0))
-  ([k v rate] (publish (format "%s:%d|ms" (name k) v) rate)))
+  ([k v rate] (publish (format "%s:%s|ms" (name k) v) rate)))
 
 (defn decrement
   "Decrement a counter at specified rate, defaults to a one decrement
@@ -87,9 +87,9 @@
 (defmacro with-sampled-timing
   "Time the execution of the provided code, with sampling."
   [k rate & body]
-  `(let [start# (System/currentTimeMillis)
+  `(let [start# (System/nanoTime)
          result# (do ~@body)]
-    (timing ~k (- (System/currentTimeMillis) start#) ~rate)
+    (timing ~k (/ (- (System/nanoTime) start#) 1000000) ~rate)
     result#))
 
 (defmacro with-timing
