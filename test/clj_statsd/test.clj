@@ -50,12 +50,12 @@
     (unique :unique 765)))
 
 (deftest should-send-timing-with-default-rate
-  (should-send-expected-stat "glork:320|ms" 2 2
-    (timing "glork" 320)  
+  (should-send-expected-stat "glork:320.000000|ms" 2 2
+    (timing "glork" 320)
     (timing :glork 320)))
 
 (deftest should-send-timing-with-provided-rate
-  (should-send-expected-stat "glork:320|ms|@0.990000" 1 10
+  (should-send-expected-stat "glork:320.000000|ms|@0.990000" 1 10
     (dotimes [n 10] (timing "glork" 320 0.99))))
 
 (deftest should-not-send-stat-without-cfg

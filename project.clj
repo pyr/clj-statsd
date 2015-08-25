@@ -1,4 +1,4 @@
-(defproject clj-statsd "0.3.11"
+(defproject crashlytics/clj-statsd "0.4.1"
   :description "statsd protocol client"
-  :url         "https://github.com/pyr/clj-statsd"
-  :dependencies [[org.clojure/clojure "1.4.0"]])
+  :url "https://github.com/crashlytics/clj-statsd"
+  :dependencies [[org.clojure/clojure "1.7.0"]])
