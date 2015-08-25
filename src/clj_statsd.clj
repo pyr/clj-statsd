@@ -64,7 +64,7 @@
 (defn timing
   "Time an event at specified rate, defaults to 1.0 rate"
   ([k v]      (timing k v 1.0))
-  ([k v rate] (publish (format "%s:%s|ms" (name k) v) rate)))
+  ([k v rate] (publish (format "%s:%f|ms" (name k) (double v)) rate)))
 
 (defn decrement
   "Decrement a counter at specified rate, defaults to a one decrement
@@ -89,7 +89,7 @@
   [k rate & body]
   `(let [start# (System/nanoTime)
          result# (do ~@body)]
-    (timing ~k (/ (- (System/nanoTime) start#) 1000000) ~rate)
+    (timing ~k (double (/ (- (System/nanoTime) start#) 1000000)) ~rate)
     result#))
 
 (defmacro with-timing
