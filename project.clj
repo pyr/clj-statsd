@@ -1,4 +1,4 @@
-(defproject shmish111/clj-statsd "0.4.0"
+(defproject clj-statsd "0.4.0"
   :description "statsd protocol client"
   :url         "https://github.com/shmish111/clj-statsd"
   :license {:name "MIT License"

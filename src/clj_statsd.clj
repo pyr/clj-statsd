@@ -47,15 +47,17 @@
 (defn publish
   "Send a metric over the network, based on the provided sampling rate.
   This should be a fully formatted statsd metric line."
-  [^String content rate tags]
-  (let [prefix (:prefix @cfg)
-        with-prefix (if prefix (str prefix content) content)
-        with-rate (cond
-                    (nil? @cfg) nil
-                    (>= rate 1.0) with-prefix
-                    (<= (.nextDouble ^Random (:random @cfg)) rate) (format "%s|@%f" with-prefix rate))
-        with-tags (if (not-empty tags) (format "%s|#%s" with-rate (str/join "," tags)) with-rate)]
-    (when @cfg (send-stat with-tags))))
+  ([^String content rate]
+   (publish content rate []))
+  ([^String content rate tags]
+   (let [prefix (:prefix @cfg)
+         with-prefix (if prefix (str prefix content) content)
+         with-rate (cond
+                     (nil? @cfg) nil
+                     (>= rate 1.0) with-prefix
+                     (<= (.nextDouble ^Random (:random @cfg)) rate) (format "%s|@%f" with-prefix rate))
+         with-tags (if (not-empty tags) (format "%s|#%s" with-rate (str/join "," tags)) with-rate)]
+     (when @cfg (send-stat with-tags)))))
 
 (defn increment
   "Increment a counter at specified rate, defaults to a one increment

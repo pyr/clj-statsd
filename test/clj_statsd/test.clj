@@ -24,7 +24,11 @@
   (should-send-expected-stat "gorets:7|c" 1 1
     (increment :gorets 7))
   (should-send-expected-stat "gorets:1.1|c" 1 1
-    (increment :gorets 1.1)))
+    (increment :gorets 1.1))
+  (should-send-expected-stat "gorets:1.1|c" 1 1
+    (increment :gorets 1.1 2))
+  (should-send-expected-stat "gorets:1.1|c|#tag1,tag2" 1 1
+    (increment :gorets 1.1 2 ["tag1" "tag2"])))
 
 (deftest should-send-decrement
   (should-send-expected-stat "gorets:-1|c" 3 3
@@ -34,7 +38,11 @@
   (should-send-expected-stat "gorets:-7|c" 1 1
     (decrement :gorets 7))
   (should-send-expected-stat "gorets:-1.1|c" 1 1
-    (decrement :gorets 1.1)))
+    (decrement :gorets 1.1))
+  (should-send-expected-stat "gorets:-1.1|c" 1 1
+    (decrement :gorets 1.1 2))
+  (should-send-expected-stat "gorets:-1.1|c|#tag1,tag2" 1 1
+    (decrement :gorets 1.1 2 ["tag1" "tag2"])))
 
 (deftest should-send-gauge
   (should-send-expected-stat "gaugor:333|g" 3 3
@@ -42,7 +50,11 @@
     (gauge :gaugor 333)
     (gauge "gaugor" 333 1))
   (should-send-expected-stat "guagor:1.1|g" 1 1
-    (gauge :guagor 1.1)))
+    (gauge :guagor 1.1))
+  (should-send-expected-stat "guagor:1.1|g" 1 1
+    (gauge :guagor 1.1 2))
+  (should-send-expected-stat "guagor:1.1|g|#tag1,tag2" 1 1
+    (gauge :guagor 1.1 2 ["tag1" "tag2"])))
 
 (deftest should-send-unique
   (should-send-expected-stat "unique:765|s" 2 2
@@ -52,7 +64,10 @@
 (deftest should-send-timing-with-default-rate
   (should-send-expected-stat "glork:320|ms" 2 2
     (timing "glork" 320)  
-    (timing :glork 320)))
+    (timing :glork 320))
+  (should-send-expected-stat "glork:320|ms|#tag1,tag2" 2 2
+    (timing "glork" 320 1 ["tag1" "tag2"])
+    (timing :glork 320 1 ["tag1" "tag2"])))
 
 (deftest should-send-timing-with-provided-rate
   (should-send-expected-stat "glork:320|ms|@0.990000" 1 10
