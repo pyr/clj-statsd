@@ -10,8 +10,8 @@
   [expected min-times max-times & body]
   `(let [counter# (atom 0)]
     (with-redefs
-      [send-stat (fn [stat#]
-                   (is (= ~expected stat#))
+      [send-stat (fn [prefix# stat# tags#]
+                   (is (= ~expected (format-stat prefix# stat# tags#)))
                    (swap! counter# inc))]
       ~@body)
     (is (and (>= @counter# ~min-times) (<= @counter# ~max-times)) (str "send-stat called " @counter# " times"))))
@@ -28,7 +28,9 @@
   (should-send-expected-stat "gorets:1.1|c" 1 1
     (increment :gorets 1.1 2))
   (should-send-expected-stat "gorets:1.1|c|#tag1,tag2" 1 1
-    (increment :gorets 1.1 2 ["tag1" "tag2"])))
+                             (increment :gorets 1.1 2 ["tag1" "tag2"]))
+  (should-send-expected-stat "gorets:1.1|c|#tag1,tag2" 1 1
+                             (increment :gorets 1.1 2 [:tag1 :tag2])))
 
 (deftest should-send-decrement
   (should-send-expected-stat "gorets:-1|c" 3 3
@@ -63,7 +65,7 @@
 
 (deftest should-send-timing-with-default-rate
   (should-send-expected-stat "glork:320|ms" 2 2
-    (timing "glork" 320)  
+    (timing "glork" 320)
     (timing :glork 320))
   (should-send-expected-stat "glork:320|ms|#tag1,tag2" 2 2
     (timing "glork" 320 1 ["tag1" "tag2"])
