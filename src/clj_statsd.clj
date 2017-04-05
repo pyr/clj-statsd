@@ -43,7 +43,7 @@
 (defn send-stat
   "Send a raw metric over the network."
   [prefix content tags]
-  (let [fmt (format-stat prefix content tags)]
+  (let [fmt ^String (format-stat prefix content tags)]
     (when-let [packet (try
                         (DatagramPacket.
                          ^"[B" (.getBytes fmt)
