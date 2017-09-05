@@ -1,0 +1,17 @@
+version: 2.0
+jobs:
+  build:
+    docker:
+      - image: clojure:lein-2.7.1
+    working_directory: /root/clj-statsd
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - m2-jars-{{ checksum "project.clj" }}
+            - m2-jars
+      - run: lein test
+      - save_cache:
+          key: m2-jars-{{ checksum "project.clj" }}
+          paths:
+            - /root/.m2
