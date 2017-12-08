@@ -80,11 +80,19 @@
   ([k v rate]      (increment k v rate []))
   ([k v rate tags] (publish (format "%s:%s|c" (name k) v) rate tags)))
 
+(defn round-millis
+  "Given a numeric value of milliseconds, convert it to an integer value of
+  milliseconds by rounding to the nearest millisecond if necessary."
+  [v]
+  (cond (integer? v) v
+        (number? v) (Math/round (double v))
+        :else 0))
+
 (defn timing
   "Time an event at specified rate, defaults to 1.0 rate"
   ([k v]           (timing k v 1.0))
   ([k v rate]      (timing k v rate []))
-  ([k v rate tags] (publish (format "%s:%d|ms" (name k) v) rate tags)))
+  ([k v rate tags] (publish (format "%s:%d|ms" (name k) (round-millis v)) rate tags)))
 
 (defn decrement
   "Decrement a counter at specified rate, defaults to a one decrement
@@ -107,15 +115,27 @@
   ([k v]      (publish (format "%s:%d|s" (name k) v) 1.0 []))
   ([k v tags] (publish (format "%s:%d|s" (name k) v) 1.0 tags)))
 
+(defn with-timing-fn
+  "Helper function for the timing macros. Time the execution of f, a function
+   of no args, and then call timing with the other args."
+  [f k rate tags]
+  (let [start (System/nanoTime)]
+    (try
+     (f)
+     (finally
+      (timing k (/ (- (System/nanoTime) start) 1e6) rate tags)))))
+
+(defmacro with-tagged-timing
+  "Time the execution of the provided code, with sampling and tags."
+  [k rate tags & body]
+  `(with-timing-fn (fn [] ~@body) ~k ~rate ~tags))
+
 (defmacro with-sampled-timing
   "Time the execution of the provided code, with sampling."
   [k rate & body]
-  `(let [start# (System/currentTimeMillis)
-         result# (do ~@body)]
-    (timing ~k (- (System/currentTimeMillis) start#) ~rate)
-    result#))
+  `(with-timing-fn (fn [] ~@body) ~k ~rate []))
 
 (defmacro with-timing
   "Time the execution of the provided code."
   [k & body]
-  `(with-sampled-timing ~k 1.0 ~@body))
+  `(with-timing-fn (fn [] ~@body) ~k 1.0 []))
