@@ -63,6 +63,31 @@
     (unique "unique" 765)
     (unique :unique 765)))
 
+(deftest should-round-millis
+  (are [input expected]
+       (= expected (round-millis input))
+
+       ; Good values
+       0 0
+       99 99
+       100 100
+       0.0 0
+       0.4 0
+       99.9 100
+       100.0 100
+
+       ; Weird-but-legal values
+       1/3 0
+       2/3 1
+       -0.5 0
+       -0.6 -1
+       -99.9 -100
+
+       ; Bad values
+       nil 0
+       "bad value" 0
+       :bad-value 0))
+
 (deftest should-send-timing-with-default-rate
   (should-send-expected-stat "glork:320|ms" 2 2
     (timing "glork" 320)
@@ -80,18 +105,30 @@
     (should-send-expected-stat "gorets:1|c" 0 0 (increment "gorets"))))
 
 (deftest should-time-code
-  (let [cnt (atom 0)]
-    (with-redefs [timing
-                  (fn [k v rate]
-                    (is (= "test.time" k))
-                    (is (>= v 200))
-                    (is (= 1.0 rate))
-                    (swap! cnt inc))]
+  (let [calls (atom [])]
+    (with-redefs [timing (fn [& args]
+                           (swap! calls conj args))]
       (with-timing "test.time"
         (Thread/sleep 200))
-      (with-sampled-timing "test.time" 1.0
+      (let [[k v rate tags] (last @calls)]
+        (is (= "test.time" k))
+        (is (>= v 200))
+        (is (= 1.0 rate))
+        (is (= [] tags)))
+      (with-sampled-timing "test.time" 0.9
         (Thread/sleep 200))
-      (is (= @cnt 2)))))
+      (let [[k v rate tags] (last @calls)]
+        (is (= "test.time" k))
+        (is (>= v 200))
+        (is (= 0.9 rate))
+        (is (= [] tags)))
+      (with-tagged-timing "test.time" 0.9 ["tag1" "tag2"]
+        (Thread/sleep 200))
+      (let [[k v rate tags] (last @calls)]
+        (is (= "test.time" k))
+        (is (>= v 200))
+        (is (= 0.9 rate))
+        (is (= ["tag1" "tag2"] tags))))))
 
 (deftest should-prefix
   (with-redefs [cfg (atom nil)]
