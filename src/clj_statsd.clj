@@ -37,7 +37,7 @@
     (str "|#" (str/join "," (map name tags)))))
 
 (defn format-stat
-  [prefix content tags]
+  ^String [prefix content tags]
   (str prefix content (format-tags tags)))
 
 (defn send-stat
@@ -78,7 +78,7 @@
   ([k]             (increment k 1 1.0 []))
   ([k v]           (increment k v 1.0 []))
   ([k v rate]      (increment k v rate []))
-  ([k v rate tags] (publish (format "%s:%s|c" (name k) v) rate tags)))
+  ([k v rate tags] (publish (str (name k) ":" v "|c") rate tags)))
 
 (defn round-millis
   "Given a numeric value of milliseconds, convert it to an integer value of
@@ -92,7 +92,7 @@
   "Time an event at specified rate, defaults to 1.0 rate"
   ([k v]           (timing k v 1.0))
   ([k v rate]      (timing k v rate []))
-  ([k v rate tags] (publish (format "%s:%d|ms" (name k) (round-millis v)) rate tags)))
+  ([k v rate tags] (publish (str (name k)  ":" (round-millis v) "|ms") rate tags)))
 
 (defn decrement
   "Decrement a counter at specified rate, defaults to a one decrement
@@ -106,14 +106,14 @@
   "Send an arbitrary value."
   ([k v]           (gauge k v 1.0 []))
   ([k v rate]      (gauge k v rate []))
-  ([k v rate tags] (publish (format "%s:%s|g" (name k) v) rate tags)))
+  ([k v rate tags] (publish (str (name k) ":" v "|g") rate tags)))
 
 (defn unique
   "Send an event, unique occurences of which per flush interval
    will be counted by the statsd server. We have no rate call
    signature here because that wouldn't make much sense."
-  ([k v]      (publish (format "%s:%d|s" (name k) v) 1.0 []))
-  ([k v tags] (publish (format "%s:%d|s" (name k) v) 1.0 tags)))
+  ([k v]      (publish (str (name k) ":" v "|s") 1.0 []))
+  ([k v tags] (publish (str (name k) ":" v "|s") 1.0 tags)))
 
 (defn with-timing-fn
   "Helper function for the timing macros. Time the execution of f, a function
