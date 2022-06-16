@@ -121,9 +121,9 @@
   [f k rate tags]
   (let [start (System/nanoTime)]
     (try
-     (f)
-     (finally
-      (timing k (/ (- (System/nanoTime) start) 1e6) rate tags)))))
+      (f)
+      (finally
+        (timing k (/ (- (System/nanoTime) start) 1e6) rate tags)))))
 
 (defmacro with-tagged-timing
   "Time the execution of the provided code, with sampling and tags."

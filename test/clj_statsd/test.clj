@@ -12,24 +12,24 @@
    the expected number of times."
   [expected min-times max-times & body]
   `(let [counter# (atom 0)]
-    (with-redefs
+     (with-redefs
       [send-stat (fn [prefix# stat# tags#]
                    (is (= ~expected (format-stat prefix# stat# tags#)))
                    (swap! counter# inc))]
-      ~@body)
-    (is (and (>= @counter# ~min-times) (<= @counter# ~max-times)) (str "send-stat called " @counter# " times"))))
+       ~@body)
+     (is (and (>= @counter# ~min-times) (<= @counter# ~max-times)) (str "send-stat called " @counter# " times"))))
 
 (deftest should-send-increment
   (should-send-expected-stat "gorets:1|c" 3 3
-    (increment "gorets")
-    (increment :gorets)
-    (increment "gorets", 1))
+                             (increment "gorets")
+                             (increment :gorets)
+                             (increment "gorets", 1))
   (should-send-expected-stat "gorets:7|c" 1 1
-    (increment :gorets 7))
+                             (increment :gorets 7))
   (should-send-expected-stat "gorets:1.1|c" 1 1
-    (increment :gorets 1.1))
+                             (increment :gorets 1.1))
   (should-send-expected-stat "gorets:1.1|c" 1 1
-    (increment :gorets 1.1 2))
+                             (increment :gorets 1.1 2))
   (should-send-expected-stat "gorets:1.1|c|#tag1,tag2" 1 1
                              (increment :gorets 1.1 2 ["tag1" "tag2"]))
   (should-send-expected-stat "gorets:1.1|c|#tag1,tag2" 1 1
@@ -37,71 +37,71 @@
 
 (deftest should-send-decrement
   (should-send-expected-stat "gorets:-1|c" 3 3
-    (decrement "gorets")
-    (decrement :gorets)
-    (decrement "gorets", 1))
+                             (decrement "gorets")
+                             (decrement :gorets)
+                             (decrement "gorets", 1))
   (should-send-expected-stat "gorets:-7|c" 1 1
-    (decrement :gorets 7))
+                             (decrement :gorets 7))
   (should-send-expected-stat "gorets:-1.1|c" 1 1
-    (decrement :gorets 1.1))
+                             (decrement :gorets 1.1))
   (should-send-expected-stat "gorets:-1.1|c" 1 1
-    (decrement :gorets 1.1 2))
+                             (decrement :gorets 1.1 2))
   (should-send-expected-stat "gorets:-1.1|c|#tag1,tag2" 1 1
-    (decrement :gorets 1.1 2 ["tag1" "tag2"])))
+                             (decrement :gorets 1.1 2 ["tag1" "tag2"])))
 
 (deftest should-send-gauge
   (should-send-expected-stat "gaugor:333|g" 3 3
-    (gauge "gaugor" 333)
-    (gauge :gaugor 333)
-    (gauge "gaugor" 333 1))
+                             (gauge "gaugor" 333)
+                             (gauge :gaugor 333)
+                             (gauge "gaugor" 333 1))
   (should-send-expected-stat "guagor:1.1|g" 1 1
-    (gauge :guagor 1.1))
+                             (gauge :guagor 1.1))
   (should-send-expected-stat "guagor:1.1|g" 1 1
-    (gauge :guagor 1.1 2))
+                             (gauge :guagor 1.1 2))
   (should-send-expected-stat "guagor:1.1|g|#tag1,tag2" 1 1
-    (gauge :guagor 1.1 2 ["tag1" "tag2"])))
+                             (gauge :guagor 1.1 2 ["tag1" "tag2"])))
 
 (deftest should-send-unique
   (should-send-expected-stat "unique:765|s" 2 2
-    (unique "unique" 765)
-    (unique :unique 765)))
+                             (unique "unique" 765)
+                             (unique :unique 765)))
 
 (deftest should-round-millis
   (are [input expected]
        (= expected (round-millis input))
 
        ; Good values
-       0 0
-       99 99
-       100 100
-       0.0 0
-       0.4 0
-       99.9 100
-       100.0 100
+    0 0
+    99 99
+    100 100
+    0.0 0
+    0.4 0
+    99.9 100
+    100.0 100
 
        ; Weird-but-legal values
-       1/3 0
-       2/3 1
-       -0.5 0
-       -0.6 -1
-       -99.9 -100
+    1/3 0
+    2/3 1
+    -0.5 0
+    -0.6 -1
+    -99.9 -100
 
        ; Bad values
-       nil 0
-       "bad value" 0
-       :bad-value 0))
+    nil 0
+    "bad value" 0
+    :bad-value 0))
 
 (deftest should-send-timing-with-default-rate
   (should-send-expected-stat "glork:320|ms" 2 2
-    (timing "glork" 320)
-    (timing :glork 320))
+                             (timing "glork" 320)
+                             (timing :glork 320))
   (should-send-expected-stat "glork:320|ms|#tag1,tag2" 2 2
-    (timing "glork" 320 1 ["tag1" "tag2"])
-    (timing :glork 320 1 ["tag1" "tag2"])))
+                             (timing "glork" 320 1 ["tag1" "tag2"])
+                             (timing :glork 320 1 ["tag1" "tag2"])))
 
 (deftest should-send-timing-with-provided-rate
   (should-send-expected-stat "glork:320|ms|@0.990000" 1 10
-    (dotimes [_ 10] (timing "glork" 320 0.99))))
+                             (dotimes [_ 10] (timing "glork" 320 0.99))))
 
 (deftest should-not-send-stat-without-cfg
   (with-redefs [cfg (atom nil)]
@@ -137,5 +137,5 @@
   (with-redefs [cfg (atom nil)]
     (setup "localhost" 8125 :prefix "test.stats.")
     (should-send-expected-stat "test.stats.gorets:1|c" 2 2
-      (increment "gorets")
-      (increment :gorets))))
+                               (increment "gorets")
+                               (increment :gorets))))

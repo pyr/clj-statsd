@@ -7,3 +7,4 @@ classes
 /target
 .cache
 pom.xml.asc
+.cpcache
