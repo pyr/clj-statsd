@@ -40,17 +40,3 @@ Here is a snippet showing the use of clj-statsd:
 
 Buckets can be strings or keywords. For more information please refer to
 [statsd](https://github.com/etsy/statsd)
-
-Installing
-----------
-
-The easiest way to use clj-statsd in your own projects is via
-[Leiningen](http://github.com/technomancy/leiningen). Add the following
-dependency to your project.clj file:
-
-    [clj-statsd "0.4.2"]
-
-To build from source, run the following commands:
-
-    lein deps
-    lein jar

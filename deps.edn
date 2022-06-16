@@ -3,6 +3,14 @@
 
  :exoscale.project/lib          clj-statsd/clj-statsd
  :exoscale.project/version-file "VERSION"
+ :exoscale.project/tasks
+ {:release [{:run :exoscale.tools.project.standalone/version-remove-snapshot}
+            {:run :exoscale.tools.project.standalone/deploy}
+            {:run :exoscale.tools.project.standalone/git-commit-version}
+            {:run :exoscale.tools.project.standalone/git-tag-version}
+            {:run :exoscale.tools.project.standalone/version-bump-and-snapshot}
+            {:run :exoscale.tools.project.standalone/git-commit-version}
+            {:run :exoscale.tools.project.standalone/git-push}]}
 
  :slipset.deps-deploy/exec-args
  {:installer :remote :sign-releases? false :repository "clojars"}
