@@ -1,4 +1,4 @@
-(ns clj-statsd.test
+(ns clj-statsd.statsd-test
   (:require
    [clojure.test :refer [are deftest is use-fixtures]]
    [clj-statsd   :refer [cfg decrement format-stat gauge increment
