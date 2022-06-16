@@ -3,7 +3,8 @@
    [clojure.test :refer [are deftest is use-fixtures]]
    [clj-statsd   :refer [cfg decrement format-stat gauge increment
                          round-millis send-stat setup timing unique
-                         with-sampled-timing with-tagged-timing with-timing]]))
+                         modify-gauge with-sampled-timing with-tagged-timing
+                         with-timing]]))
 
 (use-fixtures :each (fn [f] (setup "localhost" 8125) (f)))
 
@@ -60,6 +61,22 @@
                              (gauge :guagor 1.1 2))
   (should-send-expected-stat "guagor:1.1|g|#tag1,tag2" 1 1
                              (gauge :guagor 1.1 2 ["tag1" "tag2"])))
+
+(deftest should-send-modify-gauge
+  (should-send-expected-stat "gaugor:+333|g" 3 3
+                             (modify-gauge "gaugor" 333)
+                             (modify-gauge :gaugor 333)
+                             (modify-gauge :gaugor 333 1))
+
+  (should-send-expected-stat "gaugor:-2|g" 3 3
+                             (modify-gauge "gaugor" -2)
+                             (modify-gauge :gaugor -2)
+                             (modify-gauge :gaugor -2 1))
+
+  (should-send-expected-stat "gaugor:+0|g" 3 3
+                             (modify-gauge "gaugor" 0)
+                             (modify-gauge :gaugor 0)
+                             (modify-gauge :gaugor 0 1)))
 
 (deftest should-send-unique
   (should-send-expected-stat "unique:765|s" 2 2

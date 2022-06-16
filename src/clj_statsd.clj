@@ -102,11 +102,23 @@
   ([k v rate]      (increment k (* -1 v) rate))
   ([k v rate tags] (increment k (* -1 v) rate tags)))
 
+(defn modify-gauge
+  "Increment or decrement the value of a previously sent gauge"
+  ([k v]           (modify-gauge k v 1.0 []))
+  ([k v rate]      (modify-gauge k v rate []))
+  ([k v rate tags]
+   (publish (str (name k) ":" (if (neg? v) "-" "+")
+                 (Math/abs (long v)) "|g") rate tags)))
+
 (defn gauge
   "Send an arbitrary value."
   ([k v]           (gauge k v 1.0 []))
   ([k v rate]      (gauge k v rate []))
-  ([k v rate tags] (publish (str (name k) ":" v "|g") rate tags)))
+  ([k v rate tags] (publish (str (name k) ":" v "|g") rate tags))
+  ([k v rate tags {:keys [change]}]
+   (if (true? change)
+     (modify-gauge k v rate tags)
+     (publish (str (name k) ":" v "|g") rate tags))))
 
 (defn unique
   "Send an event, unique occurences of which per flush interval
