@@ -8,3 +8,4 @@ classes
 .cache
 pom.xml.asc
 .cpcache
+resources/git-version

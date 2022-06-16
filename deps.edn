@@ -1,8 +1,25 @@
-{:deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+{:deps  {org.clojure/clojure {:mvn/version "1.11.1"}}
  :paths ["src"]
+
+ :exoscale.project/lib          clj-statsd/clj-statsd
+ :exoscale.project/version-file "VERSION"
+
+ :slipset.deps-deploy/exec-args
+ {:installer :remote :sign-releases? false :repository "clojars"}
 
  :aliases
  {:test
-  {:extra-deps {lambdaisland/kaocha {:mvn/version "1.66.1034"}}
+  {:extra-deps  {lambdaisland/kaocha {:mvn/version "1.66.1034"}}
    :extra-paths ["test"]
-   :exec-fn kaocha.runner/exec-fn}}}
+   :exec-fn     kaocha.runner/exec-fn}
+
+  :check
+  {:extra-deps {org.spootnik/deps-check {:mvn/version "0.5.2"}}
+   :extra-paths ["test"]
+   :exec-fn    spootnik.deps-check/check
+   :exec-args  {:paths ["src" "test"]}}
+
+  :project
+  {:deps       {io.github.exoscale/tools.project
+                {:git/sha "d15a7cbc648c7206edb911a2b103ea5daf5b866b"}}
+   :ns-default exoscale.tools.project}}}
