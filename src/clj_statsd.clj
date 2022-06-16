@@ -102,13 +102,27 @@
   ([k v rate]      (increment k (* -1 v) rate))
   ([k v rate tags] (increment k (* -1 v) rate tags)))
 
+(defn- prepare-gauge-for-modify
+  "Get the correct absolute value for this gauge"
+  [v]
+  (if (neg? v)
+    (if (float? v) (Math/abs (double v)) (Math/abs (long v)))
+    v))
+
 (defn modify-gauge
   "Increment or decrement the value of a previously sent gauge"
   ([k v]           (modify-gauge k v 1.0 []))
   ([k v rate]      (modify-gauge k v rate []))
   ([k v rate tags]
    (publish (str (name k) ":" (if (neg? v) "-" "+")
-                 (Math/abs (long v)) "|g") rate tags)))
+                 (prepare-gauge-for-modify v) "|g") rate tags)))
+
+(defn- sanitize-gauge
+  "Ensure gauge value can be sent on the wire"
+  [v]
+  (when (neg? v)
+    (throw (IllegalArgumentException. (str "bad value for gauge: " v))))
+  v)
 
 (defn gauge
   "Send an arbitrary value."
@@ -118,7 +132,7 @@
   ([k v rate tags {:keys [change]}]
    (if (true? change)
      (modify-gauge k v rate tags)
-     (publish (str (name k) ":" v "|g") rate tags))))
+     (publish (str (name k) ":" (sanitize-gauge v) "|g") rate tags))))
 
 (defn unique
   "Send an event, unique occurences of which per flush interval
