@@ -24,11 +24,11 @@
                            (apply hash-map opts)))))
 
 (defn- send-packet
-  ""
+  "Send a packet to the socket. Expected to be used through the `sockagt` agent"
   [^DatagramSocket socket ^DatagramPacket packet]
   (try
     (doto socket (.send packet))
-    (catch Exception e
+    (catch Exception _
       socket)))
 
 (defn format-tags
@@ -50,7 +50,7 @@
                          ^Integer (count fmt)
                          ^InetAddress (:host @cfg)
                          ^Integer (:port @cfg))
-                        (catch Exception e
+                        (catch Exception _
                           nil))]
       (send sockagt send-packet packet))))
 

@@ -1,6 +1,9 @@
 (ns clj-statsd.test
-  (:use [clj-statsd]
-        [clojure.test]))
+  (:require
+   [clojure.test :refer [are deftest is use-fixtures]]
+   [clj-statsd   :refer [cfg decrement format-stat gauge increment
+                         round-millis send-stat setup timing unique
+                         with-sampled-timing with-tagged-timing with-timing]]))
 
 (use-fixtures :each (fn [f] (setup "localhost" 8125) (f)))
 
@@ -98,7 +101,7 @@
 
 (deftest should-send-timing-with-provided-rate
   (should-send-expected-stat "glork:320|ms|@0.990000" 1 10
-    (dotimes [n 10] (timing "glork" 320 0.99))))
+    (dotimes [_ 10] (timing "glork" 320 0.99))))
 
 (deftest should-not-send-stat-without-cfg
   (with-redefs [cfg (atom nil)]

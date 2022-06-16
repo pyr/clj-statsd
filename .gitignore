@@ -6,3 +6,4 @@ lib
 classes
 /target
 .cache
+pom.xml.asc
