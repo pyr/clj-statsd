@@ -40,3 +40,8 @@ Here is a snippet showing the use of clj-statsd:
 
 Buckets can be strings or keywords. For more information please refer to
 [statsd](https://github.com/etsy/statsd)
+
+Shutdown
+--------
+
+Since clj-statsd uses agents, [(shutdown-agents)](https://clojuredocs.org/clojure.core/shutdown-agents) must be called when exiting the program.
